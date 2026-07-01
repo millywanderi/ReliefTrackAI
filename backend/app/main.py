@@ -3,13 +3,16 @@
 from fastapi import FastAPI
 
 app = FastAPI(
-    title="ReliefTrack AI",
-    version="1.0.0"
+    title="ReliefTrack AI API",
+    version="1.0.0",
+    description="AI-powered Humanitarian Resource Management Platform",
 )
 
 
 @app.get("/")
-def home():
+def root():
     return {
-        "message": "Welcome to ReliefTrack AI"
+        "application": "ReliefTrack AI",
+        "status": "running",
+        "version": "1.0.0",
     }
