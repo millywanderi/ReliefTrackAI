@@ -13,6 +13,8 @@ from app.schemas.user import UserCreate, UserLogin
 from app.models.user import User
 from app.auth.dependencies import get_current_user
 
+from app.models.role import Role
+
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
