@@ -27,13 +27,22 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     if existing_user:
         raise HTTPException(status_code=400, detail="Email already registered")
 
+    # get default role from database (IMPORTANT FIX)
+    role = db.query(Role).filter(Role.name == "admin").first()
+
+    if not role:
+        raise HTTPException(
+            status_code=500,
+            detail="Default role 'admin' does not exist in database. Please create it first."
+        )
+
     # create user
     new_user = User(
         first_name=user.first_name,
         last_name=user.last_name,
         email=user.email,
         hashed_password=hash_password(user.password),
-        role_id=1  # default role (we'll improve later)
+        role_id=role.id
     )
 
     db.add(new_user)
