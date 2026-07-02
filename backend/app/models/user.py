@@ -4,6 +4,7 @@ from sqlalchemy import Boolean, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
+from app.models.role import Role
 
 
 class User(Base):
@@ -32,4 +33,4 @@ class User(Base):
         ForeignKey("roles.id")
     )
 
-    role = relationship("Role")
+    role = relationship("Role", backref="users")
