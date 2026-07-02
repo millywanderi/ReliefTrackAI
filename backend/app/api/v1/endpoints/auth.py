@@ -11,6 +11,7 @@ from app.core.config import settings
 from app.schemas.user import UserCreate, UserLogin
 
 from app.models.user import User
+from app.auth.dependencies import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
@@ -64,4 +65,14 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     return {
         "access_token": token,
         "token_type": "bearer"
+    }
+
+
+@router.get("/me")
+def get_me(current_user=Depends(get_current_user)):
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "name": f"{current_user.first_name} {current_user.last_name}",
+        "role_id": current_user.role_id
     }
