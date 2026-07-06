@@ -9,7 +9,9 @@ class BeneficiaryCreate(BaseModel):
     first_name: str
     last_name: str
     gender: str
+
     date_of_birth: date | None = None
+
     national_id: str | None = None
     phone: str | None = None
 
@@ -24,9 +26,11 @@ class BeneficiaryCreate(BaseModel):
 
 class BeneficiaryResponse(BaseModel):
     id: int
+
     first_name: str
     last_name: str
     gender: str
+
     county: str
 
     class Config:
