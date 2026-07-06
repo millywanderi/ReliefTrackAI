@@ -146,7 +146,7 @@ ReliefTrackAI/
 * [x] SQLAlchemy setup
 * [x] Database migrations
 * [x] User and Role models
-* [ ] Authentication API
+* [x] Authentication API
 
 ## Phase 2 – Beneficiary Management
 
