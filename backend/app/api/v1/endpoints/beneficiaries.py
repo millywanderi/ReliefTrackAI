@@ -41,10 +41,22 @@ def create_beneficiary(
 # -------------------------
 @router.get("/", response_model=list[BeneficiaryResponse])
 def get_all_beneficiaries(
+    search: str | None = None,
+    county: str | None = None,
+    gender: str | None = None,
+    page: int = 1,
+    limit: int = 20,
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    return beneficiary_service.get_all_beneficiaries(db)
+    return beneficiary_service.get_all_beneficiaries(
+        db=db,
+        search=search,
+        county=county,
+        gender=gender,
+        page=page,
+        limit=limit,
+    )
 
 
 # -------------------------
