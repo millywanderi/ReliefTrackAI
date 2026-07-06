@@ -43,8 +43,41 @@ def create_beneficiary(db, beneficiary_data, current_user):
     return beneficiary
 
 
-def get_all_beneficiaries(db: Session):
-    return db.query(Beneficiary).all()
+def get_all_beneficiaries(
+    db: Session,
+    search: str | None = None,
+    county: str | None = None,
+    gender: str | None = None,
+    page: int = 1,
+    limit: int = 20,
+):
+
+    query = db.query(Beneficiary)
+
+    # Search by name or National ID
+    if search:
+        query = query.filter(
+            (Beneficiary.first_name.ilike(f"%{search}%")) |
+            (Beneficiary.last_name.ilike(f"%{search}%")) |
+            (Beneficiary.national_id.ilike(f"%{search}%"))
+        )
+
+    # Filter by county
+    if county:
+        query = query.filter(Beneficiary.county == county)
+
+    # Filter by gender
+    if gender:
+        query = query.filter(Beneficiary.gender == gender)
+
+    beneficiaries = (
+        query
+        .offset((page - 1) * limit)
+        .limit(limit)
+        .all()
+    )
+
+    return beneficiaries
 
 
 def get_beneficiary(db: Session, beneficiary_id: int):
