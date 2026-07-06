@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.auth.dependencies import get_current_user
 from app.core.database import get_db
 
-from app.models.beneficiary import Beneficiary
 from app.schemas.beneficiary import (
     BeneficiaryCreate,
-    BeneficiaryResponse,
     BeneficiaryUpdate,
+    BeneficiaryResponse,
 )
+
+from app.services import beneficiary_service
 
 router = APIRouter(
     prefix="/beneficiaries",
@@ -28,54 +29,26 @@ def create_beneficiary(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    # Check for duplicate National ID
-    if beneficiary.national_id:
-        existing = db.query(Beneficiary).filter(
-            Beneficiary.national_id == beneficiary.national_id
-        ).first()
-
-        if existing:
-            raise HTTPException(
-                status_code=400,
-                detail="Beneficiary with this National ID already exists."
-            )
-
-    new_beneficiary = Beneficiary(
-        first_name=beneficiary.first_name,
-        last_name=beneficiary.last_name,
-        gender=beneficiary.gender,
-        date_of_birth=beneficiary.date_of_birth,
-        national_id=beneficiary.national_id,
-        phone=beneficiary.phone,
-        county=beneficiary.county,
-        sub_county=beneficiary.sub_county,
-        ward=beneficiary.ward,
-        village=beneficiary.village,
-        latitude=beneficiary.latitude,
-        longitude=beneficiary.longitude,
-        created_by=current_user.id,
+    return beneficiary_service.create_beneficiary(
+        db,
+        beneficiary,
+        current_user
     )
-
-    db.add(new_beneficiary)
-    db.commit()
-    db.refresh(new_beneficiary)
-
-    return new_beneficiary
 
 
 # -------------------------
 # GET ALL BENEFICIARIES
 # -------------------------
 @router.get("/", response_model=list[BeneficiaryResponse])
-def get_beneficiaries(
+def get_all_beneficiaries(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    return db.query(Beneficiary).all()
+    return beneficiary_service.get_all_beneficiaries(db)
 
 
 # -------------------------
-# GET BENEFICIARY BY ID
+# GET BENEFICIARY
 # -------------------------
 @router.get("/{beneficiary_id}", response_model=BeneficiaryResponse)
 def get_beneficiary(
@@ -83,17 +56,10 @@ def get_beneficiary(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    beneficiary = db.query(Beneficiary).filter(
-        Beneficiary.id == beneficiary_id
-    ).first()
-
-    if not beneficiary:
-        raise HTTPException(
-            status_code=404,
-            detail="Beneficiary not found."
-        )
-
-    return beneficiary
+    return beneficiary_service.get_beneficiary(
+        db,
+        beneficiary_id
+    )
 
 
 # -------------------------
@@ -106,38 +72,11 @@ def update_beneficiary(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    db_beneficiary = db.query(Beneficiary).filter(
-        Beneficiary.id == beneficiary_id
-    ).first()
-
-    if not db_beneficiary:
-        raise HTTPException(
-            status_code=404,
-            detail="Beneficiary not found."
-        )
-
-    update_data = beneficiary.model_dump(exclude_unset=True)
-
-    # Prevent duplicate National IDs
-    if "national_id" in update_data and update_data["national_id"]:
-        existing = db.query(Beneficiary).filter(
-            Beneficiary.national_id == update_data["national_id"],
-            Beneficiary.id != beneficiary_id
-        ).first()
-
-        if existing:
-            raise HTTPException(
-                status_code=400,
-                detail="Another beneficiary already uses this National ID."
-            )
-
-    for field, value in update_data.items():
-        setattr(db_beneficiary, field, value)
-
-    db.commit()
-    db.refresh(db_beneficiary)
-
-    return db_beneficiary
+    return beneficiary_service.update_beneficiary(
+        db,
+        beneficiary_id,
+        beneficiary
+    )
 
 
 # -------------------------
@@ -149,19 +88,7 @@ def delete_beneficiary(
     db: Session = Depends(get_db),
     current_user=Depends(get_current_user)
 ):
-    beneficiary = db.query(Beneficiary).filter(
-        Beneficiary.id == beneficiary_id
-    ).first()
-
-    if not beneficiary:
-        raise HTTPException(
-            status_code=404,
-            detail="Beneficiary not found."
-        )
-
-    db.delete(beneficiary)
-    db.commit()
-
-    return {
-        "message": "Beneficiary deleted successfully."
-    }
+    return beneficiary_service.delete_beneficiary(
+        db,
+        beneficiary_id
+    )
