@@ -5,9 +5,12 @@ from sqlalchemy.orm import Session
 
 from app.models.household import Household
 from app.models.beneficiary import Beneficiary
+from app.models.household_member import HouseholdMember
 
-
-def create_household(db: Session, household_data):
+def create_household(
+        db: Session,
+        household_data
+):
 
     existing = db.query(Household).filter(
         Household.household_code == household_data.household_code
@@ -19,11 +22,11 @@ def create_household(db: Session, household_data):
             detail="Household code already exists."
         )
 
-    head = db.query(Beneficiary).filter(
+    beneficiary = db.query(Beneficiary).filter(
         Beneficiary.id == household_data.household_head_id
     ).first()
 
-    if not head:
+    if not beneficiary:
         raise HTTPException(
             status_code=404,
             detail="Household head not found."
@@ -32,7 +35,7 @@ def create_household(db: Session, household_data):
     household = Household(
         household_code=household_data.household_code,
         household_head_id=household_data.household_head_id,
-        household_size=household_data.household_size,
+        household_size=1,
         shelter_type=household_data.shelter_type,
         livelihood=household_data.livelihood,
     )
@@ -40,6 +43,15 @@ def create_household(db: Session, household_data):
     db.add(household)
     db.commit()
     db.refresh(household)
+
+    head_member = HouseholdMember(
+        household_id=household.id,
+        beneficiary_id=beneficiary.id,
+        relationship_to_head="Head"
+    )
+
+    db.add(head_member)
+    db.commit()
 
     return household
 
