@@ -33,6 +33,7 @@ class Household(Base):
 
     household_size = Column(
         Integer,
+        nullable=False,
         default=1
     )
 
