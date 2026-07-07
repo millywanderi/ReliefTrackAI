@@ -150,7 +150,7 @@ ReliefTrackAI/
 
 ## Phase 2 – Beneficiary Management
 
-* [ ] Beneficiary registration
+* [x] Beneficiary registration
 * [ ] Household management
 * [ ] Vulnerability assessment
 
