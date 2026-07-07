@@ -6,6 +6,7 @@ from app.core.database import Base, engine
 from app.models.role import Role
 from app.models.user import User
 from app.models.beneficiary import Beneficiary
+from app.models.household import Household
 
 Base.metadata.create_all(bind=engine)
 
