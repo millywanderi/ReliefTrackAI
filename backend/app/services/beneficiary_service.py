@@ -51,6 +51,11 @@ def get_all_beneficiaries(
     page: int = 1,
     limit: int = 20,
 ):
+    
+    print("========== SEARCH DEBUG ==========")
+    print("Search:", search)
+    print("County:", county)
+    print("Gender:", gender)
 
     query = db.query(Beneficiary)
 
@@ -64,11 +69,13 @@ def get_all_beneficiaries(
 
     # Filter by county
     if county:
-        query = query.filter(Beneficiary.county == county)
+        query = query.filter(
+                Beneficiary.county.ilike(county)
 
     # Filter by gender
     if gender:
-        query = query.filter(Beneficiary.gender == gender)
+        query = query.filter(
+            Beneficiary.gender.ilike(gender)
 
     beneficiaries = (
         query
