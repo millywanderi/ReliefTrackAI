@@ -71,11 +71,13 @@ def get_all_beneficiaries(
     if county:
         query = query.filter(
                 Beneficiary.county.ilike(county)
+                )
 
     # Filter by gender
     if gender:
         query = query.filter(
             Beneficiary.gender.ilike(gender)
+            )
 
     beneficiaries = (
         query
