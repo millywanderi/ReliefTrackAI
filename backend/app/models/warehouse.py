@@ -60,12 +60,12 @@ class Warehouse(Base):
     )
 
     manager_phone = Column(
-        String(30),
+        String(20),
         nullable=True,
     )
 
     status = Column(
-        String(30),
+        String(20),
         nullable=False,
         default="Active",
     )
