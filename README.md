@@ -152,7 +152,7 @@ ReliefTrackAI/
 
 * [x] Beneficiary registration
 * [x] Household management
-* [ ] Vulnerability assessment
+* [x] Vulnerability assessment
 
 ## Phase 3 – Warehouse & Inventory Management
 
