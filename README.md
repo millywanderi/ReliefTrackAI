@@ -156,7 +156,7 @@ ReliefTrackAI/
 
 ## Phase 3 – Warehouse & Inventory Management
 
-* [ ] Warehouse management
+* [x] Warehouse management
 * [ ] Resource inventory
 * [ ] Stock monitoring
 * [ ] Alerts and notifications
