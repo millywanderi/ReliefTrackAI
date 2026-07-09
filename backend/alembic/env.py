@@ -19,6 +19,7 @@ from app.models import (
     household_member,
     vulnerability_assessment,
     warehouse,
+    resource,
 )
 
 # this is the Alembic Config object, which provides
