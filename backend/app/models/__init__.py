@@ -3,3 +3,4 @@
 from app.models.user import User
 from app.models.role import Role
 from app.models.beneficiary import Beneficiary
+from .warehouse import Warehouse
