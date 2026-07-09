@@ -11,8 +11,14 @@ from app.core.database import Base
 from app.core.config import settings
 
 # Import ALL models here
-from app.models.user import User
-from app.models.role import Role
+from app.models import (
+    user,
+    role,
+    beneficiary,
+    household,
+    household_member,
+    vulnerability_assessment,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
