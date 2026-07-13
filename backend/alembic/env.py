@@ -20,6 +20,7 @@ from app.models import (
     vulnerability_assessment,
     warehouse,
     resource,
+    stock_transaction,
 )
 
 # this is the Alembic Config object, which provides
