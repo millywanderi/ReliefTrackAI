@@ -5,4 +5,5 @@ from app.models.role import Role
 from app.models.beneficiary import Beneficiary
 from .warehouse import Warehouse
 from .resource import Resource
+from .stock_transaction import StockTransaction
 
