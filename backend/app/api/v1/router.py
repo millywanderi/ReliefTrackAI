@@ -10,6 +10,7 @@ from app.api.v1.endpoints import vulnerability_assessments
 from app.api.v1.endpoints import warehouses
 from app.api.v1.endpoints import resources
 from app.api.v1.endpoints import stock_transactions
+from app.api.v1.endpoints import stock_monitoring
 
 api_router = APIRouter()
 
@@ -21,3 +22,5 @@ api_router.include_router(vulnerability_assessments.router)
 api_router.include_router(warehouses.router)
 api_router.include_router(resources.router)
 api_router.include_router(stock_transactions.router)
+api_router.include_router(stock_monitoring.router)
+
