@@ -9,6 +9,7 @@ from app.api.v1.endpoints import household_members
 from app.api.v1.endpoints import vulnerability_assessments
 from app.api.v1.endpoints import warehouses
 from app.api.v1.endpoints import resources
+from app.api.v1.endpoints import stock_transactions
 
 api_router = APIRouter()
 
@@ -19,3 +20,4 @@ api_router.include_router(household_members.router)
 api_router.include_router(vulnerability_assessments.router)
 api_router.include_router(warehouses.router)
 api_router.include_router(resources.router)
+api_router.include_router(stock_transactions.router)
