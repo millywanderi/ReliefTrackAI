@@ -6,4 +6,5 @@ from app.models.beneficiary import Beneficiary
 from .warehouse import Warehouse
 from .resource import Resource
 from .stock_transaction import StockTransaction
+from .distribution_event import DistributionEvent
 
