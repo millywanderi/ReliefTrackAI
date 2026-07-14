@@ -21,6 +21,7 @@ from app.models import (
     warehouse,
     resource,
     stock_transaction,
+    distribution_event,
 )
 
 # this is the Alembic Config object, which provides
