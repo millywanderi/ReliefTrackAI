@@ -11,6 +11,7 @@ from app.api.v1.endpoints import warehouses
 from app.api.v1.endpoints import resources
 from app.api.v1.endpoints import stock_transactions
 from app.api.v1.endpoints import stock_monitoring
+from app.api.v1.endpoints import distribution_events
 
 api_router = APIRouter()
 
@@ -23,4 +24,5 @@ api_router.include_router(warehouses.router)
 api_router.include_router(resources.router)
 api_router.include_router(stock_transactions.router)
 api_router.include_router(stock_monitoring.router)
+api_router.include_router(distribution_events.router)
 
