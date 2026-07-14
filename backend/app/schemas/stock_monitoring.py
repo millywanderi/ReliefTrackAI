@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 
 class StockMonitoringResponse(BaseModel):
+
     warehouse_id: int
     warehouse: str
 
@@ -11,6 +12,9 @@ class StockMonitoringResponse(BaseModel):
     resource: str
 
     current_stock: int
+    minimum_stock: int
+
+    status: str
 
     class Config:
         from_attributes = True
