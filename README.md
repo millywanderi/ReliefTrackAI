@@ -158,8 +158,8 @@ ReliefTrackAI/
 
 * [x] Warehouse management
 * [x] Resource inventory
-* [ ] Stock monitoring
-* [ ] Alerts and notifications
+* [x] Stock monitoring
+* [x] Alerts and notifications
 
 ## Phase 4 – Humanitarian Distribution
 
