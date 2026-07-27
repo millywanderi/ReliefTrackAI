@@ -8,4 +8,5 @@ from .resource import Resource
 from .stock_transaction import StockTransaction
 from .distribution_event import DistributionEvent
 from .distribution_resource import DistributionResource
+from .distribution_verification import DistributionVerification
 
