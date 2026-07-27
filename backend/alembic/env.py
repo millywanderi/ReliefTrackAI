@@ -23,6 +23,7 @@ from app.models import (
     stock_transaction,
     distribution_event,
     distribution_resource,
+    distribution_verification,
 )
 
 # this is the Alembic Config object, which provides
