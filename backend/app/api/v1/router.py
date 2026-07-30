@@ -15,6 +15,7 @@ from app.api.v1.endpoints import distribution_events
 from app.api.v1.endpoints import distribution_resources
 from app.api.v1.endpoints import distribution_verifications
 from app.api.v1.endpoints import dashboard
+from app.api.v1.endpoints import analytics
 
 api_router = APIRouter()
 
@@ -31,4 +32,4 @@ api_router.include_router(distribution_events.router)
 api_router.include_router(distribution_resources.router)
 api_router.include_router(distribution_verifications.router)
 api_router.include_router(dashboard.router)
-
+api_router.include_router(analytics.router)
