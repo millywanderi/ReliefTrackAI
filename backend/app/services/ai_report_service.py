@@ -10,7 +10,16 @@ from app.services.fraud_detection_service import detect_fraud
 from app.services.predictive_analytics_service import (
     get_predictive_analytics,
 )
+from app.ai.providers import AIProvider
 
+provider = AIProvider()
+
+summary = provider.generate_report(
+    dashboard,
+    top_resource,
+    predictive,
+    fraud,
+)
 
 def generate_executive_report(db: Session):
 
