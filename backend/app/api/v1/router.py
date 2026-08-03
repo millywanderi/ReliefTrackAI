@@ -17,6 +17,7 @@ from app.api.v1.endpoints import distribution_verifications
 from app.api.v1.endpoints import dashboard
 from app.api.v1.endpoints import analytics
 from app.api.v1.endpoints import forecast
+from app.api.v1.endpoints import ai_report
 
 api_router = APIRouter()
 
@@ -35,4 +36,5 @@ api_router.include_router(distribution_verifications.router)
 api_router.include_router(dashboard.router)
 api_router.include_router(analytics.router)
 api_router.include_router(forecast.router)
+api_router.include_router(ai_report.router)
 
