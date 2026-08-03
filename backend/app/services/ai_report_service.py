@@ -10,9 +10,10 @@ from app.services.fraud_detection_service import detect_fraud
 from app.services.predictive_analytics_service import (
     get_predictive_analytics,
 )
-from app.ai.providers import AIProvider
 
-provider = AIProvider()
+from app.ai.factory import get_ai_provider
+
+provider = get_ai_provider()
 
 summary = provider.generate_report(
     dashboard,
