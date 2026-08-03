@@ -11,15 +11,13 @@ class Settings(BaseSettings):
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
 
+    AI_PROVIDER: str = "mock"
+    OPENAI_API_KEY: str | None = None
+    OPENAI_MODEL: str = "gpt-5"
+
     model_config = SettingsConfigDict(
         env_file=".env",
-        case_sensitive=True
-
-    AI_PROVIDER: str = "mock"
-
-    OPENAI_API_KEY: str | None = None
-
-    OPENAI_MODEL: str = "gpt-5"
+        case_sensitive=True,
     )
 
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
@@ -13,14 +13,6 @@ from app.services.predictive_analytics_service import (
 
 from app.ai.factory import get_ai_provider
 
-provider = get_ai_provider()
-
-summary = provider.generate_report(
-    dashboard,
-    top_resource,
-    predictive,
-    fraud,
-)
 
 def generate_executive_report(db: Session):
 
@@ -40,22 +32,17 @@ def generate_executive_report(db: Session):
             "predicted_next_month": 0,
         }
 
-    summary = (
-        f"ReliefTrack AI analysed the current humanitarian "
-        f"operations and found {dashboard['beneficiaries']} "
-        f"registered beneficiaries across "
-        f"{dashboard['warehouses']} warehouses. "
-        f"The highest expected demand next month is "
-        f"{top_resource['resource']} "
-        f"({top_resource['predicted_next_month']} units). "
-        f"There are {len(fraud)} fraud alerts requiring review. "
-        f"The highest operational risk warehouse is "
-        f"{predictive['highest_risk_warehouse']}. "
-        f"{predictive['recommendation']}"
+    provider = get_ai_provider()
+
+    summary = provider.generate_report(
+        dashboard,
+        top_resource,
+        predictive,
+        fraud,
     )
 
     return {
-        "generated_at": datetime.utcnow().isoformat(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
 
         "dashboard": dashboard,
 
