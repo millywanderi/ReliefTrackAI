@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 
+from openai import OpenAI
+
 from app.ai.prompts import EXECUTIVE_REPORT_PROMPT
+from app.core.config import settings
 
 
 class AIProvider:
+
+    def __init__(self):
+        self.client = OpenAI(
+            api_key=settings.OPENAI_API_KEY
+        )
 
     def generate_report(
         self,
@@ -20,12 +28,9 @@ class AIProvider:
             fraud=fraud,
         )
 
-        #
-        # Temporary fallback.
-        # We'll replace this with an LLM call.
-        #
-
-        return (
-            "AI Report\n\n"
-            f"{prompt}"
+        response = self.client.responses.create(
+            model=settings.OPENAI_MODEL,
+            input=prompt,
         )
+
+        return response.output_text
