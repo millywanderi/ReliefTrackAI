@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=True
+
+    AI_PROVIDER: str = "mock"
+
+    OPENAI_API_KEY: str | None = None
+
+    OPENAI_MODEL: str = "gpt-5"
     )
 
 
@@ -23,6 +29,3 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
-
-OPENAI_API_KEY: str
-OPENAI_MODEL: str = "gpt-5"
