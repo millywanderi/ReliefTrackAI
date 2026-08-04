@@ -10,8 +10,8 @@ export default defineConfig({
   ],
 
   resolve: {
-   allias: {
-   "@": fileURLToPath(new URL("./src", import.meta.url)),
-   },
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
   },
 });
