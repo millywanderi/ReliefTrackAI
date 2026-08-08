@@ -22,6 +22,31 @@ function DashboardPage() {
     queryFn: getDashboard,
   });
 
+  const overviewData = data
+  ? [
+      {
+        name: "Beneficiaries",
+        value: data.beneficiaries,
+      },
+      {
+        name: "Households",
+        value: data.households,
+      },
+      {
+        name: "Warehouses",
+        value: data.warehouses,
+      },
+      {
+        name: "Resources",
+        value: data.resources,
+      },
+      {
+        name: "Distributions",
+        value: data.distribution_events,
+      },
+    ]
+  : [];
+
   if (isLoading) {
     return (
       <div>
