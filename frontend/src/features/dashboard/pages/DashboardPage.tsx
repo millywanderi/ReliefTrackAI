@@ -1,3 +1,13 @@
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+
 import { useQuery } from "@tanstack/react-query";
 
 import { getDashboard } from "../api/dashboardApi";
