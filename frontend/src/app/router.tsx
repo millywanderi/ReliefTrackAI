@@ -7,6 +7,8 @@ import ProtectedRoute from "@/features/auth/ProtectedRoute";
 
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 
+import BeneficiariesPage from "@/features/beneficiaries/pages/BeneficiariesPage";
+
 export const router = createBrowserRouter([
   {
     path: "/login",
@@ -24,9 +26,15 @@ export const router = createBrowserRouter([
             index: true,
             element: <DashboardPage />,
           },
+
           {
             path: "dashboard",
             element: <DashboardPage />,
+          },
+
+          {
+            path: "beneficiaries",
+            element: <BeneficiariesPage />,
           },
         ],
       },
