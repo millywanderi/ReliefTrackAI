@@ -140,3 +140,24 @@ body {
     @apply font-sans;
   }
 }
+
+.input-field {
+  width: 100%;
+  border: 1px solid rgb(203 213 225);
+  border-radius: 0.5rem;
+  background: white;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  color: rgb(15 23 42);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.input-field:focus {
+  border-color: rgb(100 116 139);
+  box-shadow: 0 0 0 3px rgb(148 163 184 / 0.2);
+}
+
+.input-field::placeholder {
+  color: rgb(148 163 184);
+}
