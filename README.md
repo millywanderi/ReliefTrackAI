@@ -217,13 +217,13 @@ ReliefTrackAI/
 
 ### Beneficiary Management
 
-* [ ] Beneficiary list
-* [ ] Beneficiary details
-* [ ] Add beneficiary
-* [ ] Edit beneficiary
-* [ ] Household management
-* [ ] Vulnerability assessment forms
-* [ ] Search and filtering
+* [x] Beneficiary list
+* [x] Beneficiary details
+* [x] Add beneficiary
+* [x] Edit beneficiary
+* [x] Household management
+* [x] Vulnerability assessment forms
+* [x] Search and filtering
 
 ### Warehouse & Inventory
 
