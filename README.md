@@ -207,13 +207,13 @@ ReliefTrackAI/
 
 ### Dashboard
 
-* [ ] Operational overview cards
-* [ ] Beneficiary statistics
-* [ ] Warehouse statistics
-* [ ] Resource inventory summary
-* [ ] Distribution summary
-* [ ] AI insights panel
-* [ ] Recent activity
+* [x] Operational overview cards
+* [x] Beneficiary statistics
+* [x] Warehouse statistics
+* [x] Resource inventory summary
+* [x] Distribution summary
+* [x] AI insights panel
+* [x] Recent activity
 
 ### Beneficiary Management
 
