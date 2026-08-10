@@ -6,8 +6,10 @@ import LoginPage from "@/features/auth/pages/LoginPage";
 import ProtectedRoute from "@/features/auth/ProtectedRoute";
 
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
-
 import BeneficiariesPage from "@/features/beneficiaries/pages/BeneficiariesPage";
+
+import ProfilePage from "@/features/profile/pages/ProfilePage";
+import SettingsPage from "@/features/settings/pages/SettingsPage";
 
 export const router = createBrowserRouter([
   {
@@ -35,6 +37,16 @@ export const router = createBrowserRouter([
           {
             path: "beneficiaries",
             element: <BeneficiariesPage />,
+          },
+
+          {
+            path: "profile",
+            element: <ProfilePage />,
+          },
+
+          {
+            path: "settings",
+            element: <SettingsPage />,
           },
         ],
       },
