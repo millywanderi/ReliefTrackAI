@@ -189,12 +189,12 @@ ReliefTrackAI/
 
 ### Authentication
 
-* [ ] Login page
-* [ ] JWT authentication
-* [ ] Protected routes
-* [ ] Token persistence
-* [ ] Automatic logout on token expiration
-* [ ] Role-based navigation
+* [x] Login page
+* [x] JWT authentication
+* [x] Protected routes
+* [x] Token persistence
+* [x] Automatic logout on token expiration
+* [x] Role-based navigation
 
 ### Application Layout
 
