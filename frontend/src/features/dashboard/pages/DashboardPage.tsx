@@ -2,7 +2,6 @@ import {
   AlertTriangle,
   BarChart3,
   Boxes,
-  Building2,
   CheckCircle2,
   ClipboardList,
   HeartPulse,
