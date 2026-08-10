@@ -1,10 +1,14 @@
 import { useState } from "react";
+
 import {
   Bell,
+  BarChart3,
   ChevronDown,
   ChevronRight,
   ClipboardList,
+  FileText,
   LayoutDashboard,
+  LogOut,
   Menu,
   Package,
   Settings,
@@ -14,10 +18,8 @@ import {
   Users,
   Warehouse,
   X,
-  BarChart3,
-  FileText,
-  LogOut,
 } from "lucide-react";
+
 import {
   NavLink,
   Outlet,
@@ -59,10 +61,23 @@ function AppLayout() {
       return location.pathname.startsWith(item.path);
     }) ?? navigationItems[0];
 
+  const pageTitle =
+    location.pathname === "/profile"
+      ? "My Profile"
+      : location.pathname === "/settings"
+        ? "Settings"
+        : currentItem?.label ?? "Dashboard";
+
   const handleLogout = () => {
     setProfileOpen(false);
+    setNotificationsOpen(false);
     setMobileMenuOpen(false);
     logout();
+  };
+
+  const closeMenus = () => {
+    setProfileOpen(false);
+    setNotificationsOpen(false);
   };
 
   return (
@@ -89,21 +104,19 @@ function AppLayout() {
       >
         {/* Logo */}
         <div className="flex h-20 items-center justify-between border-b px-6">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white">
-                <ShieldCheck size={20} />
-              </div>
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white">
+              <ShieldCheck size={20} />
+            </div>
 
-              <div>
-                <h1 className="text-base font-bold text-slate-900">
-                  ReliefTrack AI
-                </h1>
+            <div>
+              <h1 className="text-base font-bold text-slate-900">
+                ReliefTrack AI
+              </h1>
 
-                <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
-                  Humanitarian Operations
-                </p>
-              </div>
+              <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
+                Humanitarian Operations
+              </p>
             </div>
           </div>
 
@@ -131,7 +144,10 @@ function AppLayout() {
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    closeMenus();
+                  }}
                   className={({ isActive }) =>
                     [
                       "group flex items-center gap-3 rounded-xl px-3 py-2.5",
@@ -218,12 +234,12 @@ function AppLayout() {
                 />
 
                 <span className="truncate font-medium text-slate-600">
-                  {currentItem?.label ?? "Dashboard"}
+                  {pageTitle}
                 </span>
               </div>
 
               <h2 className="mt-1 truncate text-lg font-semibold text-slate-900">
-                {currentItem?.label ?? "Dashboard"}
+                {pageTitle}
               </h2>
             </div>
           </div>
@@ -297,7 +313,7 @@ function AppLayout() {
               )}
             </div>
 
-            {/* Profile */}
+            {/* Profile Menu */}
             <div className="relative">
               <button
                 type="button"
@@ -331,6 +347,7 @@ function AppLayout() {
 
               {profileOpen && (
                 <div className="absolute right-0 top-12 z-50 w-64 overflow-hidden rounded-2xl border bg-white shadow-xl">
+                  {/* User Information */}
                   <div className="border-b px-4 py-4">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
@@ -349,24 +366,42 @@ function AppLayout() {
                     </div>
                   </div>
 
+                  {/* Profile Navigation */}
                   <div className="p-2">
-                    <button
-                      type="button"
-                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    <NavLink
+                      to="/profile"
+                      onClick={closeMenus}
+                      className={({ isActive }) =>
+                        [
+                          "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition",
+                          isActive
+                            ? "bg-slate-100 font-medium text-slate-900"
+                            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                        ].join(" ")
+                      }
                     >
                       <User size={17} />
                       My Profile
-                    </button>
+                    </NavLink>
 
-                    <button
-                      type="button"
-                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    <NavLink
+                      to="/settings"
+                      onClick={closeMenus}
+                      className={({ isActive }) =>
+                        [
+                          "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition",
+                          isActive
+                            ? "bg-slate-100 font-medium text-slate-900"
+                            : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                        ].join(" ")
+                      }
                     >
                       <Settings size={17} />
                       Settings
-                    </button>
+                    </NavLink>
                   </div>
 
+                  {/* Logout */}
                   <div className="border-t p-2">
                     <button
                       type="button"
