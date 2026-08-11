@@ -6,6 +6,8 @@ import {
   X,
 } from "lucide-react";
 
+import type { ReactNode } from "react";
+
 import type { Warehouse } from "../types";
 
 interface WarehouseDetailsProps {
@@ -94,7 +96,7 @@ function WarehouseDetails({
           <Detail
             label="Latitude"
             value={
-              warehouse.latitude !== null
+              warehouse.latitude != null
                 ? String(warehouse.latitude)
                 : null
             }
@@ -103,7 +105,7 @@ function WarehouseDetails({
           <Detail
             label="Longitude"
             value={
-              warehouse.longitude !== null
+              warehouse.longitude != null
                 ? String(warehouse.longitude)
                 : null
             }
@@ -133,8 +135,8 @@ function WarehouseDetails({
 
 interface DetailProps {
   label: string;
-  value: string | null;
-  icon?: React.ReactNode;
+  value?: string | null;
+  icon?: ReactNode;
 }
 
 function Detail({
