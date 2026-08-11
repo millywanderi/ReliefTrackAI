@@ -1,23 +1,15 @@
-import { useEffect, useState } from "react";
-import {
-  X,
-  Save,
-  Warehouse as WarehouseIcon,
-} from "lucide-react";
+import { useState } from "react";
 
-import type {
-  Warehouse,
-  WarehouseCreate,
-} from "../types";
+import type { WarehouseCreate } from "../types";
 
 interface WarehouseFormProps {
-  warehouse?: Warehouse | null;
-  onSubmit: (data: WarehouseCreate) => Promise<void>;
+  initialData?: Partial<WarehouseCreate>;
+  onSubmit: (data: WarehouseCreate) => void;
   onCancel: () => void;
   isSubmitting?: boolean;
 }
 
-const initialForm: WarehouseCreate = {
+const defaultForm: WarehouseCreate = {
   name: "",
   county: "",
   sub_county: "",
@@ -31,343 +23,247 @@ const initialForm: WarehouseCreate = {
 };
 
 function WarehouseForm({
-  warehouse,
+  initialData,
   onSubmit,
   onCancel,
   isSubmitting = false,
 }: WarehouseFormProps) {
-  const [form, setForm] =
-    useState<WarehouseCreate>(initialForm);
+  const [form, setForm] = useState<WarehouseCreate>({
+    ...defaultForm,
+    ...initialData,
+  });
 
-  useEffect(() => {
-    if (warehouse) {
-      setForm({
-        name: warehouse.name,
-        county: warehouse.county,
-        sub_county: warehouse.sub_county ?? "",
-        address: warehouse.address ?? "",
-        latitude: warehouse.latitude ?? undefined,
-        longitude: warehouse.longitude ?? undefined,
-        capacity: warehouse.capacity,
-        manager_name: warehouse.manager_name ?? "",
-        manager_phone: warehouse.manager_phone ?? "",
-        status: warehouse.status,
-      });
-    } else {
-      setForm(initialForm);
-    }
-  }, [warehouse]);
-
-  function updateField(
+  const handleChange = (
     field: keyof WarehouseCreate,
     value: string | number | undefined,
-  ) {
-    setForm((current) => ({
+  ) => {
+    setForm((current: WarehouseCreate) => ({
       ...current,
       [field]: value,
     }));
-  }
+  };
 
-  async function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>,
-  ) {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    await onSubmit({
+    onSubmit({
       ...form,
-      capacity: Number(form.capacity),
       latitude:
         form.latitude === undefined ||
-        form.latitude === null ||
-        form.latitude === ("" as never)
+        Number.isNaN(form.latitude)
           ? undefined
           : Number(form.latitude),
       longitude:
         form.longitude === undefined ||
-        form.longitude === null ||
-        form.longitude === ("" as never)
+        Number.isNaN(form.longitude)
           ? undefined
           : Number(form.longitude),
+      capacity: Number(form.capacity),
     });
-  }
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white shadow-2xl">
-        <div className="flex items-center justify-between border-b px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white">
-              <WarehouseIcon size={19} />
-            </div>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Warehouse Name
+          </label>
 
-            <div>
-              <h2 className="text-lg font-semibold text-slate-900">
-                {warehouse
-                  ? "Edit Warehouse"
-                  : "Add Warehouse"}
-              </h2>
-
-              <p className="text-sm text-slate-500">
-                {warehouse
-                  ? "Update warehouse information."
-                  : "Register a new warehouse."}
-              </p>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-lg p-2 text-slate-500 hover:bg-slate-100"
-            aria-label="Close"
-          >
-            <X size={20} />
-          </button>
+          <input
+            type="text"
+            value={form.name}
+            onChange={(event) =>
+              handleChange("name", event.target.value)
+            }
+            required
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+            placeholder="Main Relief Warehouse"
+          />
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-6 p-6"
-        >
-          <div>
-            <h3 className="mb-3 text-sm font-semibold text-slate-900">
-              Warehouse Information
-            </h3>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            County
+          </label>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field
-                label="Warehouse Name"
-                required
-                value={form.name}
-                onChange={(value) =>
-                  updateField("name", value)
-                }
-              />
+          <input
+            type="text"
+            value={form.county}
+            onChange={(event) =>
+              handleChange("county", event.target.value)
+            }
+            required
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+            placeholder="Nairobi"
+          />
+        </div>
 
-              <Field
-                label="County"
-                required
-                value={form.county}
-                onChange={(value) =>
-                  updateField("county", value)
-                }
-              />
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Sub County
+          </label>
 
-              <Field
-                label="Sub-county"
-                value={form.sub_county ?? ""}
-                onChange={(value) =>
-                  updateField("sub_county", value)
-                }
-              />
+          <input
+            type="text"
+            value={form.sub_county ?? ""}
+            onChange={(event) =>
+              handleChange("sub_county", event.target.value)
+            }
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+          />
+        </div>
 
-              <Field
-                label="Address"
-                value={form.address ?? ""}
-                onChange={(value) =>
-                  updateField("address", value)
-                }
-              />
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Address
+          </label>
 
-              <Field
-                label="Capacity"
-                required
-                type="number"
-                min="0"
-                value={form.capacity}
-                onChange={(value) =>
-                  updateField("capacity", Number(value))
-                }
-              />
+          <input
+            type="text"
+            value={form.address ?? ""}
+            onChange={(event) =>
+              handleChange("address", event.target.value)
+            }
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+          />
+        </div>
 
-              <SelectField
-                label="Status"
-                value={form.status}
-                onChange={(value) =>
-                  updateField("status", value)
-                }
-                options={[
-                  "Active",
-                  "Inactive",
-                  "Maintenance",
-                ]}
-              />
-            </div>
-          </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Capacity
+          </label>
 
-          <div>
-            <h3 className="mb-3 text-sm font-semibold text-slate-900">
-              Location
-            </h3>
+          <input
+            type="number"
+            min="0"
+            value={form.capacity}
+            onChange={(event) =>
+              handleChange(
+                "capacity",
+                Number(event.target.value),
+              )
+            }
+            required
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+          />
+        </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field
-                label="Latitude"
-                type="number"
-                step="any"
-                value={form.latitude ?? ""}
-                onChange={(value) =>
-                  updateField(
-                    "latitude",
-                    value === ""
-                      ? undefined
-                      : Number(value),
-                  )
-                }
-              />
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Status
+          </label>
 
-              <Field
-                label="Longitude"
-                type="number"
-                step="any"
-                value={form.longitude ?? ""}
-                onChange={(value) =>
-                  updateField(
-                    "longitude",
-                    value === ""
-                      ? undefined
-                      : Number(value),
-                  )
-                }
-              />
-            </div>
-          </div>
+          <select
+            value={form.status ?? "Active"}
+            onChange={(event) =>
+              handleChange("status", event.target.value)
+            }
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+          >
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
 
-          <div>
-            <h3 className="mb-3 text-sm font-semibold text-slate-900">
-              Warehouse Manager
-            </h3>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Manager Name
+          </label>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Field
-                label="Manager Name"
-                value={form.manager_name ?? ""}
-                onChange={(value) =>
-                  updateField("manager_name", value)
-                }
-              />
+          <input
+            type="text"
+            value={form.manager_name ?? ""}
+            onChange={(event) =>
+              handleChange(
+                "manager_name",
+                event.target.value,
+              )
+            }
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+          />
+        </div>
 
-              <Field
-                label="Manager Phone"
-                value={form.manager_phone ?? ""}
-                onChange={(value) =>
-                  updateField("manager_phone", value)
-                }
-              />
-            </div>
-          </div>
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Manager Phone
+          </label>
 
-          <div className="flex justify-end gap-3 border-t pt-5">
-            <button
-              type="button"
-              onClick={onCancel}
-              disabled={isSubmitting}
-              className="rounded-xl border px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
-            >
-              Cancel
-            </button>
+          <input
+            type="tel"
+            value={form.manager_phone ?? ""}
+            onChange={(event) =>
+              handleChange(
+                "manager_phone",
+                event.target.value,
+              )
+            }
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+          />
+        </div>
 
-            <button
-              type="submit"
-              disabled={
-                isSubmitting ||
-                !form.name.trim() ||
-                !form.county.trim() ||
-                form.capacity < 0
-              }
-              className="flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Save size={17} />
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Latitude
+          </label>
 
-              {isSubmitting
-                ? "Saving..."
-                : warehouse
-                  ? "Save Changes"
-                  : "Add Warehouse"}
-            </button>
-          </div>
-        </form>
+          <input
+            type="number"
+            step="any"
+            value={form.latitude ?? ""}
+            onChange={(event) =>
+              handleChange(
+                "latitude",
+                event.target.value === ""
+                  ? undefined
+                  : Number(event.target.value),
+              )
+            }
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-slate-700">
+            Longitude
+          </label>
+
+          <input
+            type="number"
+            step="any"
+            value={form.longitude ?? ""}
+            onChange={(event) =>
+              handleChange(
+                "longitude",
+                event.target.value === ""
+                  ? undefined
+                  : Number(event.target.value),
+              )
+            }
+            className="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm outline-none focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
+          />
+        </div>
       </div>
-    </div>
-  );
-}
 
-interface FieldProps {
-  label: string;
-  value: string | number;
-  onChange: (value: string) => void;
-  required?: boolean;
-  type?: string;
-  min?: string;
-  step?: string;
-}
+      <div className="flex justify-end gap-3 border-t pt-5">
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={isSubmitting}
+          className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Cancel
+        </button>
 
-function Field({
-  label,
-  value,
-  onChange,
-  required = false,
-  type = "text",
-  min,
-  step,
-}: FieldProps) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-sm font-medium text-slate-700">
-        {label}
-        {required && (
-          <span className="ml-1 text-red-500">*</span>
-        )}
-      </span>
-
-      <input
-        type={type}
-        min={min}
-        step={step}
-        value={value}
-        required={required}
-        onChange={(event) =>
-          onChange(event.target.value)
-        }
-        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
-      />
-    </label>
-  );
-}
-
-interface SelectFieldProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  options: string[];
-}
-
-function SelectField({
-  label,
-  value,
-  onChange,
-  options,
-}: SelectFieldProps) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-sm font-medium text-slate-700">
-        {label}
-      </span>
-
-      <select
-        value={value}
-        onChange={(event) =>
-          onChange(event.target.value)
-        }
-        className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
-      >
-        {options.map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-    </label>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isSubmitting ? "Saving..." : "Save Warehouse"}
+        </button>
+      </div>
+    </form>
   );
 }
 
