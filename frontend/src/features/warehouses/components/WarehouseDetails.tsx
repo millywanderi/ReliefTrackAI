@@ -67,12 +67,12 @@ function WarehouseDetails({
 
           <Detail
             label="Sub-county"
-            value={warehouse.sub_county}
+            value={warehouse.sub_county ?? null}
           />
 
           <Detail
             label="Address"
-            value={warehouse.address}
+            value={warehouse.address ?? null}
             icon={<MapPin size={16} />}
           />
 
@@ -83,13 +83,13 @@ function WarehouseDetails({
 
           <Detail
             label="Manager"
-            value={warehouse.manager_name}
+            value={warehouse.manager_name ?? null}
             icon={<User size={16} />}
           />
 
           <Detail
             label="Manager Phone"
-            value={warehouse.manager_phone}
+            value={warehouse.manager_phone ?? null}
             icon={<Phone size={16} />}
           />
 
