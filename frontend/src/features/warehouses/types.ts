@@ -13,29 +13,36 @@ export interface Warehouse {
   created_at: string;
 }
 
-export interface WarehouseCreate {
+/**
+ * Payload used when creating or updating a warehouse.
+ *
+ * The backend accepts the same basic fields for both operations.
+ */
+export interface WarehousePayload {
   name: string;
   county: string;
-  sub_county?: string;
-  address?: string;
-  latitude?: number;
-  longitude?: number;
+  sub_county?: string | null;
+  address?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   capacity: number;
-  manager_name?: string;
-  manager_phone?: string;
+  manager_name?: string | null;
+  manager_phone?: string | null;
   status?: string;
 }
+
+export interface WarehouseCreate extends WarehousePayload {}
 
 export interface WarehouseUpdate {
   name?: string;
   county?: string;
-  sub_county?: string;
-  address?: string;
-  latitude?: number;
-  longitude?: number;
+  sub_county?: string | null;
+  address?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
   capacity?: number;
-  manager_name?: string;
-  manager_phone?: string;
+  manager_name?: string | null;
+  manager_phone?: string | null;
   status?: string;
 }
 
