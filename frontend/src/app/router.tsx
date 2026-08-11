@@ -7,7 +7,9 @@ import ProtectedRoute from "@/features/auth/ProtectedRoute";
 
 import DashboardPage from "@/features/dashboard/pages/DashboardPage";
 import BeneficiariesPage from "@/features/beneficiaries/pages/BeneficiariesPage";
+
 import WarehousesPage from "@/features/warehouses/pages/WarehousesPage";
+import InventoryPage from "@/features/inventory/pages/InventoryPage";
 
 export const router = createBrowserRouter([
   {
@@ -40,6 +42,11 @@ export const router = createBrowserRouter([
           {
             path: "warehouses",
             element: <WarehousesPage />,
+          },
+
+          {
+            path: "inventory",
+            element: <InventoryPage />,
           },
         ],
       },
