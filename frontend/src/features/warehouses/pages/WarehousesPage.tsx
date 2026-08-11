@@ -500,23 +500,23 @@ function WarehouseForm({
   };
 
   const submit = (event: React.FormEvent) => {
-    event.preventDefault();
+  event.preventDefault();
 
-    onSubmit({
-      ...form,
-      capacity: Number(form.capacity),
-      latitude:
-        form.latitude === null ||
-        form.latitude === ""
-          ? null
-          : Number(form.latitude),
-      longitude:
-        form.longitude === null ||
-        form.longitude === ""
-          ? null
-          : Number(form.longitude),
-    });
-  };
+  onSubmit({
+    ...form,
+    capacity: Number(form.capacity),
+    latitude:
+      form.latitude === null ||
+      form.latitude === undefined
+        ? undefined
+        : Number(form.latitude),
+    longitude:
+      form.longitude === null ||
+      form.longitude === undefined
+        ? undefined
+        : Number(form.longitude),
+  });
+};
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">
