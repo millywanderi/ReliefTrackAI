@@ -13,28 +13,15 @@ export interface Warehouse {
   created_at: string;
 }
 
-export interface WarehouseCreate {
+export interface WarehousePayload {
   name: string;
   county: string;
   sub_county?: string;
   address?: string;
-  latitude?: number;
-  longitude?: number;
+  latitude?: number | null;
+  longitude?: number | null;
   capacity: number;
   manager_name?: string;
   manager_phone?: string;
   status: string;
-}
-
-export interface WarehouseUpdate {
-  name?: string;
-  county?: string;
-  sub_county?: string;
-  address?: string;
-  latitude?: number;
-  longitude?: number;
-  capacity?: number;
-  manager_name?: string;
-  manager_phone?: string;
-  status?: string;
 }
