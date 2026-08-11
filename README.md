@@ -227,12 +227,12 @@ ReliefTrackAI/
 
 ### Warehouse & Inventory
 
-* [ ] Warehouse management
-* [ ] Resource inventory
-* [ ] Stock monitoring
-* [ ] Stock transaction history
-* [ ] Low stock alerts
-* [ ] Inventory filtering
+* [x] Warehouse management
+* [x] Resource inventory
+* [x] Stock monitoring
+* [x] Stock transaction history
+* [x] Low stock alerts
+* [x] Inventory filtering
 
 ### Humanitarian Distribution
 
