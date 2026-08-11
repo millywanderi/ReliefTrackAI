@@ -67,3 +67,5 @@ export interface StockTransaction {
   created_by: number;
   created_at: string;
 }
+
+export type WarehousePayload = WarehouseCreate;
