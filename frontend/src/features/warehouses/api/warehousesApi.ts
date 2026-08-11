@@ -1,30 +1,21 @@
 import api from "@/services/api";
 import type {
   Warehouse,
-  WarehouseCreate,
-  WarehouseUpdate,
+  WarehousePayload,
 } from "../types";
 
-export interface WarehouseFilters {
+export async function getWarehouses(params?: {
   search?: string;
   county?: string;
   status?: string;
-  page?: number;
-  limit?: number;
-}
-
-export async function getWarehouses(
-  filters: WarehouseFilters = {},
-): Promise<Warehouse[]> {
+}) {
   const response = await api.get<Warehouse[]>(
     "/api/v1/warehouses/",
     {
       params: {
-        search: filters.search || undefined,
-        county: filters.county || undefined,
-        status: filters.status || undefined,
-        page: filters.page ?? 1,
-        limit: filters.limit ?? 20,
+        ...params,
+        page: 1,
+        limit: 100,
       },
     },
   );
@@ -32,43 +23,29 @@ export async function getWarehouses(
   return response.data;
 }
 
-export async function getWarehouse(
-  warehouseId: number,
-): Promise<Warehouse> {
-  const response = await api.get<Warehouse>(
-    `/api/v1/warehouses/${warehouseId}`,
-  );
-
-  return response.data;
-}
-
 export async function createWarehouse(
-  warehouse: WarehouseCreate,
-): Promise<Warehouse> {
+  payload: WarehousePayload,
+) {
   const response = await api.post<Warehouse>(
     "/api/v1/warehouses/",
-    warehouse,
+    payload,
   );
 
   return response.data;
 }
 
 export async function updateWarehouse(
-  warehouseId: number,
-  warehouse: WarehouseUpdate,
-): Promise<Warehouse> {
+  id: number,
+  payload: Partial<WarehousePayload>,
+) {
   const response = await api.put<Warehouse>(
-    `/api/v1/warehouses/${warehouseId}`,
-    warehouse,
+    `/api/v1/warehouses/${id}`,
+    payload,
   );
 
   return response.data;
 }
 
-export async function deleteWarehouse(
-  warehouseId: number,
-): Promise<void> {
-  await api.delete(
-    `/api/v1/warehouses/${warehouseId}`,
-  );
+export async function deleteWarehouse(id: number) {
+  await api.delete(`/api/v1/warehouses/${id}`);
 }
