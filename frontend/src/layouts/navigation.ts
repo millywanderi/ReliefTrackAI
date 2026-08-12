@@ -45,4 +45,14 @@ export const navigationItems: NavigationItem[] = [
     path: "/administration",
     roles: [1],
   },
+  {
+      label: "Stock Transactions",
+      path: "/stock-transactions",
+      roles: [1, 2, 3],
+  },
+  {
+      label: "Stock Monitoring",
+      path: "/stock-monitoring",
+      roles: [1, 2, 3],
+  },
 ];
