@@ -8,6 +8,13 @@ export interface Resource {
   created_at: string;
 }
 
+export interface ResourceFilters {
+  search?: string;
+  category?: string;
+  page?: number;
+  limit?: number;
+}
+
 export interface ResourceCreate {
   name: string;
   category: string;
