@@ -13,36 +13,31 @@ export interface Warehouse {
   created_at: string;
 }
 
-/**
- * Payload used when creating or updating a warehouse.
- *
- * The backend accepts the same basic fields for both operations.
- */
-export interface WarehousePayload {
+export interface WarehouseCreate {
   name: string;
   county: string;
-  sub_county?: string | null;
-  address?: string | null;
+  sub_county?: string;
+  address?: string;
   latitude?: number | null;
   longitude?: number | null;
   capacity: number;
-  manager_name?: string | null;
-  manager_phone?: string | null;
+  manager_name?: string;
+  manager_phone?: string;
   status?: string;
 }
 
-export interface WarehouseCreate extends WarehousePayload {}
+export type WarehousePayload = WarehouseCreate;
 
 export interface WarehouseUpdate {
   name?: string;
   county?: string;
-  sub_county?: string | null;
-  address?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
+  sub_county?: string;
+  address?: string;
+  latitude?: number;
+  longitude?: number;
   capacity?: number;
-  manager_name?: string | null;
-  manager_phone?: string | null;
+  manager_name?: string;
+  manager_phone?: string;
   status?: string;
 }
 
@@ -67,5 +62,3 @@ export interface StockTransaction {
   created_by: number;
   created_at: string;
 }
-
-export type WarehousePayload = WarehouseCreate;
