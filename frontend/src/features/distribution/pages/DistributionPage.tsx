@@ -41,10 +41,13 @@ import type {
   DistributionVerificationStatus,
 } from "../types";
 
+import DistributionHistory from "../components/DistributionHistory";
+
 type DistributionTab =
   | "events"
   | "allocations"
-  | "verification";
+  | "verification"
+  | "history";
 
 function DistributionPage() {
   const queryClient = useQueryClient();
@@ -368,6 +371,16 @@ function DistributionPage() {
           >
             Delivery Verification
           </TabButton>
+
+          <TabButton
+            active={activeTab === "history"}
+            onClick={() =>
+              setActiveTab("history")
+            }
+            icon={<ClipboardList size={17} />}
+          >
+            Distribution History
+          </TabButton>
         </div>
       </div>
 
@@ -413,6 +426,22 @@ function DistributionPage() {
           getResourceName={getResourceName}
         />
       )}
+
+     {/* History */}
+     {activeTab === "history" && (
+       <DistributionHistory
+         verifications={verifications}
+         isLoading={
+           verificationsQuery.isLoading
+         }
+         isError={verificationsQuery.isError}
+         getEventName={getEventName}
+         getBeneficiaryName={
+           getBeneficiaryName
+         }
+         getResourceName={getResourceName}
+       />
+     )}
 
       {/* Event form */}
       {showEventForm && (
