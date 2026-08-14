@@ -62,7 +62,8 @@ export const router = createBrowserRouter([
           {
               path: "stock-monitoring",
               element: <StockMonitoringPage />,
-          }
+          },
+
           {
               path: "distribution",
               element: <DistributionPage />,
