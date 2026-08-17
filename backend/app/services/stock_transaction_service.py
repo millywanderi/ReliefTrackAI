@@ -44,16 +44,19 @@ def create_stock_transaction(
             detail="Resource not found."
         )
 
-    if transaction_data.transaction_type not in VALID_TRANSACTION_TYPES:
+    transaction_type = transaction_data.transaction_type.strip().upper()
+
+    if transaction_type not in VALID_TRANSACTION_TYPES:
         raise HTTPException(
             status_code=400,
-            detail="Invalid transaction type."
+            detail=f"Invalid transaction type: {transaction_data.transaction_type!r}. "
+                   f"Expected one of: {sorted(VALID_TRANSACTION_TYPES)}"
         )
 
     transaction = StockTransaction(
         warehouse_id=transaction_data.warehouse_id,
         resource_id=transaction_data.resource_id,
-        transaction_type=transaction_data.transaction_type,
+        transaction_type=transaction_type,
         quantity=transaction_data.quantity,
         reference=transaction_data.reference,
         notes=transaction_data.notes,

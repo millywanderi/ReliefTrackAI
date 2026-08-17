@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import axios from "axios";
+
 import {
   CalendarDays,
   CheckCircle2,
@@ -150,6 +152,26 @@ function DistributionPage() {
 
       setShowAllocationForm(false);
     },
+
+    onError: (error) => {
+      console.error(
+        "Distribution resource allocation failed:",
+        error,
+      );
+
+      if (axios.isAxiosError(error)) {
+        const message =
+          error.response?.data?.detail ??
+          "Unable to allocate resource.";
+
+        window.alert(message);
+        return;
+      }
+
+      window.alert(
+        "Unable to allocate resource. Please try again.",
+      );
+    }
   });
 
   const deleteAllocationMutation = useMutation({
