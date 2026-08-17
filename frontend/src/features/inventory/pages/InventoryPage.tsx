@@ -1194,6 +1194,22 @@ function TransactionForm({
               <option value="STOCK_OUT">
                 Stock Out
               </option>
+
+              <option value="TRANSFER_IN">
+                Transfer In
+              </option>
+
+              <option value="TRANSFER_OUT">
+                Transfer Out
+              </option>
+
+              <option value="ADJUSTERMENT">
+                Adjustment
+              </option>
+
+              <option value="DAMAGED">
+                Damaged
+              </option>
             </select>
           </div>
 
