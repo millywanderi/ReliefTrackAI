@@ -26,11 +26,20 @@ export interface StockMonitoring {
   status: string;
 }
 
+export type TransactionType =
+  | "STOCK_IN"
+  | "STOCK_OUT"
+  | "TRANSFER_IN"
+  | "TRANSFER_OUT"
+  | "ADJUSTMENT"
+  | "DAMAGED";
+
+
 export interface StockTransaction {
   id: number;
   warehouse_id: number;
   resource_id: number;
-  transaction_type: string;
+  transaction_type: TransactionType;
   quantity: number;
   reference: string | null;
   notes: string | null;
@@ -41,7 +50,7 @@ export interface StockTransaction {
 export interface StockTransactionPayload {
   warehouse_id: number;
   resource_id: number;
-  transaction_type: string;
+  transaction_type: TransactionType;
   quantity: number;
   reference?: string;
   notes?: string;
