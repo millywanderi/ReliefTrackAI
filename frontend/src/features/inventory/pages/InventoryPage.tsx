@@ -1062,7 +1062,7 @@ function TransactionForm({
         warehouses[0]?.id ?? 0,
       resource_id:
         resources[0]?.id ?? 0,
-      transaction_type: "IN",
+      transaction_type: "STOCK_IN",
       quantity: 1,
       reference: "",
       notes: "",
@@ -1187,11 +1187,11 @@ function TransactionForm({
               }
               className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-slate-400"
             >
-              <option value="IN">
+              <option value="STOCK_IN">
                 Stock In
               </option>
 
-              <option value="OUT">
+              <option value="STOCK_OUT">
                 Stock Out
               </option>
             </select>
