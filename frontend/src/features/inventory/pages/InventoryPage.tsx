@@ -36,6 +36,7 @@ import type {
 } from "../types";
 
 import { getWarehouses } from "@/features/warehouses/api/warehousesApi";
+import type { TransactionType } from "@/features/stock-transactions/types";
 
 type Tab =
   | "stock"
@@ -1182,7 +1183,7 @@ function TransactionForm({
                 setForm({
                   ...form,
                   transaction_type:
-                    event.target.value,
+                    event.target.value as TransactionType,
                 })
               }
               className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none focus:border-slate-400"
