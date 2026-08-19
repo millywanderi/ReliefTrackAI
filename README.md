@@ -237,7 +237,7 @@ ReliefTrackAI/
 ### Humanitarian Distribution
 
 * [x] Distribution events
-* [ ] Resource allocation
+* [x] Resource allocation
 * [ ] Distribution verification
 * [ ] Distribution history
 * [ ] Distribution reports
