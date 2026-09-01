@@ -1204,7 +1204,7 @@ function TransactionForm({
                 Transfer Out
               </option>
 
-              <option value="ADJUSTERMENT">
+              <option value="ADJUSTMENT">
                 Adjustment
               </option>
 
