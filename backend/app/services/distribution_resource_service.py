@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.models.distribution_event import DistributionEvent
 from app.models.distribution_resource import DistributionResource
+from app.models.distribution_verification import DistributionVerification
 from app.models.resource import Resource
 from app.models.stock_transaction import StockTransaction
 
@@ -43,6 +44,63 @@ def get_current_stock(
     return stock or 0
 
 
+def get_reserved_quantity(
+    db: Session,
+    warehouse_id: int,
+    resource_id: int,
+    exclude_distribution_event_id: int | None = None,
+):
+    query = (
+        db.query(
+            func.sum(DistributionResource.quantity)
+        )
+        .join(
+            DistributionEvent,
+            DistributionEvent.id
+            == DistributionResource.distribution_event_id,
+        )
+        .filter(
+            DistributionEvent.warehouse_id == warehouse_id,
+            DistributionResource.resource_id == resource_id,
+            DistributionEvent.status.notin_(
+                ["Completed", "Cancelled"]
+            ),
+        )
+    )
+
+    if exclude_distribution_event_id is not None:
+        query = query.filter(
+            DistributionResource.distribution_event_id
+            != exclude_distribution_event_id
+        )
+
+    return query.scalar() or 0
+
+
+def get_available_stock(
+    db: Session,
+    warehouse_id: int,
+    resource_id: int,
+    exclude_distribution_event_id: int | None = None,
+):
+    current_stock = get_current_stock(
+        db,
+        warehouse_id,
+        resource_id,
+    )
+
+    reserved_quantity = get_reserved_quantity(
+        db,
+        warehouse_id,
+        resource_id,
+        exclude_distribution_event_id,
+    )
+
+    available_stock = current_stock - reserved_quantity
+
+    return max(available_stock, 0)
+
+
 def create_distribution_resource(
     db: Session,
     allocation,
@@ -66,7 +124,20 @@ def create_distribution_resource(
         )
 
     # ---------------------------------------------------------
-    # 2. Check that the resource exists
+    # 2. Only Planned or In Progress events can receive
+    #    allocations.
+    # ---------------------------------------------------------
+    if event.status in {"Completed", "Cancelled"}:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Resources cannot be allocated to a "
+                f"{event.status.lower()} distribution event."
+            ),
+        )
+
+    # ---------------------------------------------------------
+    # 3. Check that the resource exists
     # ---------------------------------------------------------
     resource = (
         db.query(Resource)
@@ -83,7 +154,7 @@ def create_distribution_resource(
         )
 
     # ---------------------------------------------------------
-    # 3. Validate quantity
+    # 4. Validate quantity
     # ---------------------------------------------------------
     if allocation.quantity <= 0:
         raise HTTPException(
@@ -92,8 +163,7 @@ def create_distribution_resource(
         )
 
     # ---------------------------------------------------------
-    # 4. Find any existing allocation for the same
-    #    distribution event + resource
+    # 5. Find existing allocation for this event/resource
     # ---------------------------------------------------------
     existing_allocation = (
         db.query(DistributionResource)
@@ -107,45 +177,43 @@ def create_distribution_resource(
     )
 
     # ---------------------------------------------------------
-    # 5. Get current warehouse stock
+    # 6. Calculate stock available for this allocation.
+    #
+    # Existing allocation for THIS event is excluded because
+    # it is already part of the event's reservation.
     # ---------------------------------------------------------
-    available_stock = get_current_stock(
+    available_stock = get_available_stock(
         db,
         event.warehouse_id,
         allocation.resource_id,
+        exclude_distribution_event_id=(
+            allocation.distribution_event_id
+        ),
     )
 
     # ---------------------------------------------------------
-    # 6. If an allocation already exists, add the new
-    #    quantity to the existing allocation.
-    #
-    #    Example:
-    #       Existing allocation = 100
-    #       New allocation      = 20
-    #       New total           = 120
+    # 7. Existing allocation:
+    #    increase its quantity if enough unreserved stock exists.
     # ---------------------------------------------------------
     if existing_allocation:
+
         new_total = (
             existing_allocation.quantity
             + allocation.quantity
         )
 
-        if new_total > available_stock:
-            additional_available = (
-                available_stock
-                - existing_allocation.quantity
-            )
+        current_event_allocation = (
+            existing_allocation.quantity
+        )
 
-            if additional_available < 0:
-                additional_available = 0
-
+        if allocation.quantity > available_stock:
             raise HTTPException(
                 status_code=400,
                 detail=(
-                    f"Only {additional_available} additional "
+                    f"Only {available_stock} additional "
                     f"units available for this resource. "
                     f"Existing allocation: "
-                    f"{existing_allocation.quantity}, "
+                    f"{current_event_allocation}, "
                     f"requested additional quantity: "
                     f"{allocation.quantity}."
                 ),
@@ -159,21 +227,17 @@ def create_distribution_resource(
         return existing_allocation
 
     # ---------------------------------------------------------
-    # 7. No existing allocation.
-    #    Check that the requested quantity is available.
+    # 8. New allocation
     # ---------------------------------------------------------
     if allocation.quantity > available_stock:
         raise HTTPException(
             status_code=400,
             detail=(
                 f"Only {available_stock} units available "
-                f"in warehouse."
+                f"for allocation in this warehouse."
             ),
         )
 
-    # ---------------------------------------------------------
-    # 8. Create a new allocation
-    # ---------------------------------------------------------
     distribution_resource = DistributionResource(
         distribution_event_id=allocation.distribution_event_id,
         resource_id=allocation.resource_id,
