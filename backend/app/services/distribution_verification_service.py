@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from fastapi import HTTPException
-from sqlalchemy import func
+from sqlalchemy import func, case
 from sqlalchemy.orm import Session
 
 from app.models.beneficiary import Beneficiary
@@ -19,14 +19,44 @@ VALID_STATUS = {
 }
 
 
+def get_current_stock(
+    db: Session,
+    warehouse_id: int,
+    resource_id: int,
+):
+    stock = (
+        db.query(
+            func.sum(
+                case(
+                    (
+                        StockTransaction.transaction_type.in_(
+                            [
+                                "STOCK_IN",
+                                "TRANSFER_IN",
+                                "ADJUSTMENT",
+                            ]
+                        ),
+                        StockTransaction.quantity,
+                    ),
+                    else_=-StockTransaction.quantity,
+                )
+            )
+        )
+        .filter(
+            StockTransaction.warehouse_id == warehouse_id,
+            StockTransaction.resource_id == resource_id,
+        )
+        .scalar()
+    )
+
+    return stock or 0
+
+
 def create_distribution_verification(
     db: Session,
     verification,
     current_user,
 ):
-    # ---------------------------------------------------------
-    # 1. Check distribution event
-    # ---------------------------------------------------------
     event = (
         db.query(DistributionEvent)
         .filter(
@@ -42,9 +72,6 @@ def create_distribution_verification(
             detail="Distribution event not found.",
         )
 
-    # ---------------------------------------------------------
-    # 2. Check beneficiary
-    # ---------------------------------------------------------
     beneficiary = (
         db.query(Beneficiary)
         .filter(
@@ -60,13 +87,11 @@ def create_distribution_verification(
             detail="Beneficiary not found.",
         )
 
-    # ---------------------------------------------------------
-    # 3. Check resource
-    # ---------------------------------------------------------
     resource = (
         db.query(Resource)
         .filter(
-            Resource.id == verification.resource_id
+            Resource.id
+            == verification.resource_id
         )
         .first()
     )
@@ -77,30 +102,18 @@ def create_distribution_verification(
             detail="Resource not found.",
         )
 
-    # ---------------------------------------------------------
-    # 4. Validate status
-    # ---------------------------------------------------------
     if verification.status not in VALID_STATUS:
         raise HTTPException(
             status_code=400,
             detail="Invalid verification status.",
         )
 
-    # ---------------------------------------------------------
-    # 5. Validate quantity
-    # ---------------------------------------------------------
     if verification.quantity <= 0:
         raise HTTPException(
             status_code=400,
-            detail=(
-                "Verification quantity must be "
-                "greater than zero."
-            ),
+            detail="Verification quantity must be greater than zero.",
         )
 
-    # ---------------------------------------------------------
-    # 6. Find allocation
-    # ---------------------------------------------------------
     allocation = (
         db.query(DistributionResource)
         .filter(
@@ -121,9 +134,6 @@ def create_distribution_verification(
             ),
         )
 
-    # ---------------------------------------------------------
-    # 7. Prevent duplicate beneficiary/resource verification
-    # ---------------------------------------------------------
     duplicate = (
         db.query(DistributionVerification)
         .filter(
@@ -146,15 +156,13 @@ def create_distribution_verification(
             ),
         )
 
-    # ---------------------------------------------------------
-    # 8. Calculate quantity already delivered.
-    #
-    # Pending and Failed records do not consume allocation.
-    # ---------------------------------------------------------
     delivered_quantity = (
         db.query(
-            func.sum(
-                DistributionVerification.quantity
+            func.coalesce(
+                func.sum(
+                    DistributionVerification.quantity
+                ),
+                0,
             )
         )
         .filter(
@@ -166,7 +174,6 @@ def create_distribution_verification(
             == "Delivered",
         )
         .scalar()
-        or 0
     )
 
     remaining_allocation = (
@@ -174,53 +181,21 @@ def create_distribution_verification(
         - delivered_quantity
     )
 
-    # ---------------------------------------------------------
-    # 9. Only Delivered records consume allocation.
-    # ---------------------------------------------------------
+    if verification.quantity > remaining_allocation:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Only {remaining_allocation} units "
+                f"remain from the allocation."
+            ),
+        )
+
     if verification.status == "Delivered":
 
-        if verification.quantity > remaining_allocation:
-            raise HTTPException(
-                status_code=400,
-                detail=(
-                    f"Only {remaining_allocation} units "
-                    f"remain available from the allocation. "
-                    f"Allocated: {allocation.quantity}, "
-                    f"already delivered: "
-                    f"{delivered_quantity}, "
-                    f"requested: {verification.quantity}."
-                ),
-            )
-
-        # -----------------------------------------------------
-        # 10. Make sure physical stock is still sufficient.
-        # -----------------------------------------------------
-        current_stock = (
-            db.query(
-                func.sum(
-                    func.case(
-                        (
-                            StockTransaction.transaction_type.in_(
-                                [
-                                    "STOCK_IN",
-                                    "TRANSFER_IN",
-                                    "ADJUSTMENT",
-                                ]
-                            ),
-                            StockTransaction.quantity,
-                        ),
-                        else_=-StockTransaction.quantity,
-                    )
-                )
-            )
-            .filter(
-                StockTransaction.warehouse_id
-                == event.warehouse_id,
-                StockTransaction.resource_id
-                == verification.resource_id,
-            )
-            .scalar()
-            or 0
+        current_stock = get_current_stock(
+            db,
+            event.warehouse_id,
+            verification.resource_id,
         )
 
         if verification.quantity > current_stock:
@@ -232,9 +207,6 @@ def create_distribution_verification(
                 ),
             )
 
-    # ---------------------------------------------------------
-    # 11. Create verification record
-    # ---------------------------------------------------------
     delivery = DistributionVerification(
         distribution_event_id=verification.distribution_event_id,
         beneficiary_id=verification.beneficiary_id,
@@ -247,9 +219,6 @@ def create_distribution_verification(
 
     db.add(delivery)
 
-    # ---------------------------------------------------------
-    # 12. Delivered = STOCK_OUT
-    # ---------------------------------------------------------
     if verification.status == "Delivered":
 
         stock_out = StockTransaction(
@@ -257,9 +226,7 @@ def create_distribution_verification(
             resource_id=verification.resource_id,
             transaction_type="STOCK_OUT",
             quantity=verification.quantity,
-            reference=(
-                f"Distribution Event #{event.id}"
-            ),
+            reference=f"Distribution Event #{event.id}",
             notes=(
                 f"Delivered to Beneficiary "
                 f"#{beneficiary.id}"
@@ -278,9 +245,7 @@ def create_distribution_verification(
 
 def get_all_distribution_verifications(db: Session):
     return (
-        db.query(
-            DistributionVerification
-        )
+        db.query(DistributionVerification)
         .all()
     )
 
@@ -290,9 +255,7 @@ def get_distribution_verification(
     verification_id: int,
 ):
     verification = (
-        db.query(
-            DistributionVerification
-        )
+        db.query(DistributionVerification)
         .filter(
             DistributionVerification.id
             == verification_id
