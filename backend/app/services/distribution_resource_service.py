@@ -97,7 +97,8 @@ def get_reserved_quantity(
         )
 
         remaining_quantity = (
-            allocation.quantity - delivered_quantity
+            allocation.quantity
+            - delivered_quantity
         )
 
         if remaining_quantity > 0:
@@ -154,13 +155,19 @@ def create_distribution_resource(
     if event.status == "Cancelled":
         raise HTTPException(
             status_code=400,
-            detail="Cannot allocate resources to a cancelled distribution event.",
+            detail=(
+                "Cannot allocate resources to a "
+                "cancelled distribution event."
+            ),
         )
 
     if event.status == "Completed":
         raise HTTPException(
             status_code=400,
-            detail="Cannot allocate resources to a completed distribution event.",
+            detail=(
+                "Cannot allocate resources to a "
+                "completed distribution event."
+            ),
         )
 
     resource = (
@@ -180,7 +187,10 @@ def create_distribution_resource(
     if allocation.quantity <= 0:
         raise HTTPException(
             status_code=400,
-            detail="Allocation quantity must be greater than zero.",
+            detail=(
+                "Allocation quantity must be "
+                "greater than zero."
+            ),
         )
 
     existing_allocation = (
@@ -196,19 +206,57 @@ def create_distribution_resource(
 
     if existing_allocation:
 
-        additional_available = get_available_stock(
-            db,
-            event.warehouse_id,
-            allocation.resource_id,
-            exclude_event_id=event.id,
+        delivered_quantity = (
+            db.query(
+                func.coalesce(
+                    func.sum(
+                        DistributionVerification.quantity
+                    ),
+                    0,
+                )
+            )
+            .filter(
+                DistributionVerification.distribution_event_id
+                == event.id,
+                DistributionVerification.resource_id
+                == allocation.resource_id,
+                DistributionVerification.status
+                == "Delivered",
+            )
+            .scalar()
+        )
+
+        remaining_existing_allocation = (
+            existing_allocation.quantity
+            - delivered_quantity
+        )
+
+        available_excluding_current_event = (
+            get_available_stock(
+                db,
+                event.warehouse_id,
+                allocation.resource_id,
+                exclude_event_id=event.id,
+            )
+        )
+
+        additional_available = (
+            available_excluding_current_event
+            - remaining_existing_allocation
+        )
+
+        additional_available = max(
+            additional_available,
+            0,
         )
 
         if allocation.quantity > additional_available:
             raise HTTPException(
                 status_code=400,
                 detail=(
-                    f"Only {additional_available} additional "
-                    f"units are available for allocation."
+                    f"Only {additional_available} "
+                    f"additional units are available "
+                    f"for allocation."
                 ),
             )
 
