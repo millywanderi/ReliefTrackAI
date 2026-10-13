@@ -64,7 +64,10 @@ def make_test_setup(
             return resource_query
         if model is DistributionResource:
             return allocation_query
-        if model is DistributionVerification:
+
+        # The service queries func.coalesce(...) to sum
+        # delivered verification quantities.
+        if getattr(model, "name", None) == "coalesce":
             return verification_query
         raise AssertionError(f"Unexpected model queried: {model}")
 
